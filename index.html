@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="ka">
-<head><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7642645364079912"
-     crossorigin="anonymous"></script>
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Age Counter</title>
+
+  <!-- Google AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7642645364079912"
+       crossorigin="anonymous"></script>
 
   <style>
     * {
@@ -104,17 +107,27 @@
 
 <div class="app">
   <div class="card">
+
     <div class="logo">⏳</div>
 
     <h1>Age Counter</h1>
-    <p class="subtitle">გაიგე ზუსტად რამდენი დრო გავიდა შენი დაბადებიდან</p>
+
+    <p class="subtitle">
+      გაიგე ზუსტად რამდენი დრო გავიდა შენი დაბადებიდან
+    </p>
 
     <label for="birth">დაბადების თარიღი და დრო</label>
-    <input id<input id="birth" type="text" placeholder">
+
+    <input
+      id="birth"
+      type="datetime-local"
+      step="1"
+    >
 
     <div id="result" class="result">
       <p>შეიყვანე დაბადების თარიღი 👆</p>
     </div>
+
   </div>
 </div>
 
@@ -123,11 +136,21 @@ const birth = document.getElementById("birth");
 const result = document.getElementById("result");
 
 function updateAge() {
-  if (!birth.value) return;
+
+  if (!birth.value) {
+    return;
+  }
 
   const start = new Date(birth.value);
   const now = new Date();
 
+  // თუ თარიღი არასწორია
+  if (isNaN(start.getTime())) {
+    result.innerHTML = "<p>⚠️ გთხოვ, სწორად შეიყვანე თარიღი</p>";
+    return;
+  }
+
+  // თუ მომავალშია
   if (start > now) {
     result.innerHTML = "<p>⚠️ თარიღი მომავალშია</p>";
     return;
@@ -139,7 +162,15 @@ function updateAge() {
 
   if (days < 0) {
     months--;
-    days += new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+
+    const previousMonthDays =
+      new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        0
+      ).getDate();
+
+    days += previousMonthDays;
   }
 
   if (months < 0) {
@@ -148,6 +179,7 @@ function updateAge() {
   }
 
   const difference = now - start;
+
   const totalSeconds = Math.floor(difference / 1000);
   const totalMinutes = Math.floor(totalSeconds / 60);
   const totalHours = Math.floor(totalMinutes / 60);
@@ -161,19 +193,53 @@ function updateAge() {
 
   result.innerHTML = `
     <div class="time">
-      <div class="item"><span class="number">${years}</span><span class="unit">წელი</span></div>
-      <div class="item"><span class="number">${months}</span><span class="unit">თვე</span></div>
-      <div class="item"><span class="number">${totalWeeks.toLocaleString()}</span><span class="unit">კვირა</span></div>
-      <div class="item"><span class="number">${days}</span><span class="unit">დღე</span></div>
-      <div class="item"><span class="number">${hours}</span><span class="unit">საათი</span></div>
-      <div class="item"><span class="number">${minutes}</span><span class="unit">წუთი</span></div>
-      <div class="item"><span class="number">${seconds}</span><span class="unit">წამი</span></div>
-      <div class="item"><span class="number">${milliseconds}</span><span class="unit">მილიწამი</span></div>
+
+      <div class="item">
+        <span class="number">${years}</span>
+        <span class="unit">წელი</span>
+      </div>
+
+      <div class="item">
+        <span class="number">${months}</span>
+        <span class="unit">თვე</span>
+      </div>
+
+      <div class="item">
+        <span class="number">${totalWeeks.toLocaleString("en-US")}</span>
+        <span class="unit">კვირა</span>
+      </div>
+
+      <div class="item">
+        <span class="number">${days}</span>
+        <span class="unit">დღე</span>
+      </div>
+
+      <div class="item">
+        <span class="number">${hours}</span>
+        <span class="unit">საათი</span>
+      </div>
+
+      <div class="item">
+        <span class="number">${minutes}</span>
+        <span class="unit">წუთი</span>
+      </div>
+
+      <div class="item">
+        <span class="number">${seconds}</span>
+        <span class="unit">წამი</span>
+      </div>
+
+      <div class="item">
+        <span class="number">${milliseconds}</span>
+        <span class="unit">მილიწამი</span>
+      </div>
+
     </div>
   `;
 }
 
 birth.addEventListener("input", updateAge);
+
 setInterval(updateAge, 50);
 </script>
 
