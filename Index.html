@@ -1,0 +1,205 @@
+div class="app">
+  <div class="card">
+    <div class="logo">⏳</div>
+
+    <h1>Age Counter</h1>
+    <p class="subtitle">გაიგე ზუსტად რამდენი დრო გავიდა შენი დაბადებიდან</p>
+
+    <label for="birth">დაბადების თარიღი და დრო</label>
+    <input id="birth" type="datetime-local">
+
+    <div id="result" class="result">
+      <p>შეიყვანე დაბადების თარიღი 👆</p>
+    </div>
+  </div>
+</div>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #111827, #312e81);
+  color: white;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.card {
+  width: 100%;
+  max-width: 600px;
+  padding: 35px 25px;
+  border-radius: 25px;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(15px);
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+}
+
+.logo {
+  font-size: 55px;
+}
+
+h1 {
+  font-size: 40px;
+  margin: 10px 0;
+}
+
+.subtitle {
+  color: #cbd5e1;
+  margin-bottom: 30px;
+}
+
+label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+input {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+}
+
+.result {
+  margin-top: 30px;
+}
+
+.time {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.item {
+  background: rgba(255,255,255,0.08);
+  padding: 15px;
+  border-radius: 15px;
+}
+
+.number {
+  display: block;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.unit {
+  color: #cbd5e1;
+  font-size: 14px;
+}
+
+@media (min-width: 500px) {
+  .time {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+</style>
+
+<script>
+const birth = document.getElementById("birth");
+const result = document.getElementById("result");
+
+function updateAge() {
+  if (!birth.value) return;
+
+  const start = new Date(birth.value);
+  const now = new Date();
+
+  if (start > now) {
+    result.innerHTML = "<p>⚠️ თარიღი მომავალშია</p>";
+    return;
+  }
+
+  let years = now.getFullYear() - start.getFullYear();
+  let months = now.getMonth() - start.getMonth();
+  let days = now.getDate() - start.getDate();
+
+  if (days < 0) {
+    months--;
+    const previousMonthDays =
+      new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+
+    days += previousMonthDays;
+  }
+
+  if (months < 0) {
+    years--;
+    months += 12;
+  }
+
+  const difference = now - start;
+
+  const totalSeconds = Math.floor(difference / 1000);
+  const totalMinutes = Math.floor(totalSeconds / 60);
+  const totalHours = Math.floor(totalMinutes / 60);
+  const totalDays = Math.floor(totalHours / 24);
+  const totalWeeks = Math.floor(totalDays / 7);
+
+  const hours = totalHours % 24;
+  const minutes = totalMinutes % 60;
+  const seconds = totalSeconds % 60;
+  const milliseconds = difference % 1000;
+
+  result.innerHTML = `
+    <div class="time">
+
+      <div class="item">
+        <span class="number">${years}</span>
+        <span class="unit">წელი</span>
+      </div>
+
+      <div class="item">
+        <span class="number">${months}</span>
+        <span class="unit">თვე</span>
+      </div>
+
+      <div class="item">
+        <span class="number">${totalWeeks.toLocaleString()}</span>
+        <span class="unit">კვირა</span>
+      </div>
+
+      <div class="item">
+        <span class="number">${days}</span>
+        <span class="unit">დღე</span>
+      </div>
+
+      <div class="item">
+        <span class="number">${hours}</span>
+        <span class="unit">საათი</span>
+      </div>
+
+      <div class="item">
+        <span class="number">${minutes}</span>
+        <span class="unit">წუთი</span>
+      </div>
+
+      <div class="item">
+        <span class="number">${seconds}</span>
+        <span class="unit">წამი</span>
+      </div>
+
+      <div class="item">
+        <span class="number">${milliseconds}</span>
+        <span class="unit">მილიწამი</span>
+      </div>
+
+    </div>
+  `;
+}
+
+birth.addEventListener("input", updateAge);
+
+setInterval(updateAge, 50);
+</script
